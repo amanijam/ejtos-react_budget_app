@@ -1,18 +1,60 @@
-import React, { useContext, useState } from 'react';
+// import React, { useContext, useState } from 'react';
+// import { AppContext } from '../context/AppContext';
+
+// const Budget = () => {
+//     const { budget } = useContext(AppContext);
+//     const [newBudget, setNewBudget] = useState(budget);
+//     const handleBudgetChange = (event) => {
+//         setNewBudget(event.target.value);
+//         // budget({
+//         //     type: 'SET_BUDGET',
+//         //     payload: event.target.value
+//         // });
+//     }
+//     return (
+// <div className='alert alert-secondary'>
+// <span>Budget: £{newBudget}</span>
+// <input type="number" step="10" value={newBudget} onChange={handleBudgetChange}></input>
+// </div>
+//     );
+// };
+// export default Budget;
+
+import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 
 const Budget = () => {
-    const { budget } = useContext(AppContext);
-    const [newBudget, setNewBudget] = useState(budget);
-    const handleBudgetChange = (event) => {
-        setNewBudget(event.target.value);
+	const { budget, dispatch, expenses, currency } = useContext(AppContext);
+
+	const changeBudget = (val)=>{
+		const totalExpenses = expenses.reduce((total, item) => {
+			return (total += item.cost);
+		}, 0);
+
+		let remaining = budget - totalExpenses;
+		if(val<remaining || remaining<=0) {
+			alert("You cannot reduce the budget value lower than the spending!");
+		} 
+
+        else if (val>20000){
+            alert("The budget can't exceed 20000!");
+        }
         
-    }
-    return (
-<div className='alert alert-secondary'>
-<span>Budget: £{newBudget}</span>
-<input type="number" step="10" value={newBudget} onChange={handleBudgetChange}></input>
-</div>
-    );
+        
+        else {
+			dispatch({
+				type: 'SET_BUDGET',
+				payload: val,
+			})
+			}
+	}
+	
+	return (
+		<div className='alert alert-secondary'>
+            <span>Budget: {currency}</span>
+			<input type="number" step="10" value={budget} onChange={(event)=>changeBudget(event.target.value)}></input>
+		</div>
+	);
 };
+
 export default Budget;
